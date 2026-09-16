@@ -24,6 +24,7 @@ def run(data: Path) -> None:
             Le chemin vers le répertoire contenant le corpus de pages HTML.
 
     """
+    log.debug("Chemin vers les données %s", data)
     corpus = crawl(data)
 
     ranks_sampled = sample_pagerank(corpus, DAMPING, SAMPLES)

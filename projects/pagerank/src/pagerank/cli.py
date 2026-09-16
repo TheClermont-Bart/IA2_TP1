@@ -36,7 +36,12 @@ log = logging.getLogger(__name__)
     "More than -qq is useless.",
 )
 @click.argument("data_directory")
-def main(verbose: int, quiet: int, log_file: str, data_directory: str) -> None:
+def main(
+    verbose: int,
+    quiet: int,
+    log_file: str,
+    data_directory: str,
+) -> None:
     """Point d'entrée de l'application."""
     verbosity: int = int(logging.INFO / 10) + verbose - quiet
 
@@ -46,7 +51,7 @@ def main(verbose: int, quiet: int, log_file: str, data_directory: str) -> None:
 
     log.debug(verbosity)
 
-    run(Path(data_directory))
+    run(Path(data_directory).resolve())
 
 
 def logging_configuration(

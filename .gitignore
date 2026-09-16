@@ -17,3 +17,4 @@ requirements.lock
 .coverage
 uv.lock
 correction/
+*.log

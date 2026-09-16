@@ -28,14 +28,10 @@ Bien commencer
 
 *   Dans le dossier,
 
-    ```shell
-    cd projects/pagerank
-    ```
-
     exécutez la commande suivant pour installer toutes les dépendances:
 
     ```shell
-    uv sync
+    uv sync --all-packages
     ```
     
 *   Lancez le programme avec
@@ -125,7 +121,7 @@ sur les valeurs de l'itération précédente, les valeurs finiront par converger
 
 ### Compréhension du code fourni
 
-Ouvrez `pagerank.py`. Remarquez d'abord la définition de deux constantes : 
+Ouvrez `__inti__.py`. Remarquez d'abord la définition de deux constantes : 
 `DAMPING` représente le facteur d'amortissement (`0.85`), et 
 `SAMPLES` représente le nombre d'échantillons à utiliser (`10 000`).
 
@@ -138,12 +134,18 @@ ensembles (`sets`) de toutes les pages liées par cette clé.
 Spécifications
 --------------
 
-De nombreux étudiants ont eu des problèmes avec les correcteurs automatiques 
-lors de ce travail parce que leurs dictionnaires étaient mal construits. 
-Il est impératif que vous lisiez ces spécifications attentivement et que 
-vous les implémentiez **exactement** tel que demandé.
+La cohérence du formattage du code, la clareté du code, le choix de structures
+de données et d'algorithmes optimaux et les principes des bonnes pratiques
+de programmation (S.O.L.I.D., par exemple) sont évalués.
 
-Vous ne devez rien modifier d'autre dans `pagerank.py` que les trois fonctions 
+Le code qui échoue les vérifiations automatiques sera systématiquement
+pénalisés. Pour exécuter les vérifications automatiques, lancez la commande
+
+```shell
+uv run nox -t tictactoe
+```
+
+Vous ne devez rien modifier d'autre dans `__init__.py` que les trois fonctions 
 demandées, bien que vous puissiez écrire des fonctions auxiliaires. 
 Vous pouvez importer `numpy` ou `pandas`, mais aucun autre module tiers 
 n'est autorisé.
