@@ -87,7 +87,8 @@ def transition_model(
     Retourne une distribution de probabilité sur la prochaine page à visiter.
 
     Avec une probabilité `damping_factor`, choisit au hasard un lien
-    pointé par la `page`. Avec une probabilité `1 - damping_factor`, choisit
+    pointé par la `page`.
+    Avec une probabilité `1 - damping_factor`, choisit
     au hasard un lien parmi toutes les pages du corpus.
 
     Args:
@@ -104,7 +105,24 @@ def transition_model(
         La somme des probabilités est de 1.
 
     """
-    raise NotImplementedError
+    pages = corpus.keys()
+    links = corpus[page]
+
+    if len(links) == 0:
+        probability_uni = 1 / len(pages)
+        return {p: probability_uni for p in pages}
+
+    probability_link = damping_factor / len(links)
+    probability_random = (1 - damping_factor) / len(pages)
+
+    distribution = {}
+
+    for p in corpus:
+        distribution[p] = probability_random
+        if p in links:
+            distribution[p] += probability_link
+
+    return distribution
 
 
 def sample_pagerank(
