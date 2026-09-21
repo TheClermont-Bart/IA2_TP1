@@ -84,12 +84,15 @@ def transition_model(
     corpus: dict[str, set[str]], page: str, damping_factor: float
 ) -> dict[str, float]:
     """
+
     Retourne une distribution de probabilité sur la prochaine page à visiter.
 
-    Avec une probabilité `damping_factor`, choisit au hasard un lien
-    pointé par la `page`.
-    Avec une probabilité `1 - damping_factor`, choisit
-    au hasard un lien parmi toutes les pages du corpus.
+    - Si la page ne possède aucun lien sortant, choisit aléatoirement
+     parmi toutes les pages du corpus de manière égale
+    -Avec une probabilité `damping_factor`, choisit au hasard un lien
+     pointé par la `page`.
+    -Avec une probabilité `1 - damping_factor`, choisit
+     au hasard un lien parmi toutes les pages du corpus.
 
     Args:
         corpus:
