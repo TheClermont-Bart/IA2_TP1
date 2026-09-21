@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import random
 import re
 from typing import TYPE_CHECKING
 
@@ -150,8 +151,17 @@ def sample_pagerank(
         sont leur estimation de PageRank (entre 0 et 1). La somme de toutes
         les valeurs de PageRank est de 1.
 
-    """
-    raise NotImplementedError
+    n represente le nombre de fois que le surfeur d'argent va se promener
+
+"""
+
+    dict_pagerank = {}
+
+    page_random = random.randrange(corpus,len(corpus),1)
+
+    transition_model(corpus, corpus.keys(page_random), damping_factor)
+
+    return dict_pagerank
 
 
 def iterate_pagerank(
