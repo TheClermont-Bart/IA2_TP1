@@ -154,15 +154,16 @@ def sample_pagerank(
     n represente le nombre de fois que le surfeur d'argent va se promener
 
 """
+    visit_count= {p: 0 for p in corpus} # Mets tous probabilty(valeur) 0
 
-    dict_pagerank = {}
+    page_random = random.choice(list(corpus.keys())) # Choisi une page random
 
-    page_random = random.randrange(corpus,len(corpus),1)
+    for surf in range(n): # surf sur N echantillons
+        visit_count[page_random] += 1 # Page visiter une fois
+        distribution = transition_model(corpus, page_random, damping_factor) # Va chercher sa probabilty
+        page_random = random.choices(list(distribution.keys()), weights=list(distribution.values()),k=1)[0] # weights = probability / k=1 = 1 tirage / [0] sort le nom
 
-    transition_model(corpus, corpus.keys(page_random), damping_factor)
-
-    return dict_pagerank
-
+    return {p:visit_count[p] / n for p in corpus} #Retourne dictionnaire avec valeur de probability_de_la_page/n
 
 def iterate_pagerank(
     corpus: dict[str, set[str]], damping_factor: float
