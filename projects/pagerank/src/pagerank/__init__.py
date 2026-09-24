@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 DAMPING: float = 0.85
-SAMPLES: int = 10000
+SAMPLES: int = 1
 
 log = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ def transition_model(
 
     if len(links) == 0:
         probability_uni = 1 / len(pages)
-        return {p: probability_uni for p in pages}
+        return dict.fromkeys(pages, probability_uni)
 
     probability_link = damping_factor / len(links)
     probability_random = (1 - damping_factor) / len(pages)
@@ -153,17 +153,27 @@ def sample_pagerank(
 
     n represente le nombre de fois que le surfeur d'argent va se promener
 
-"""
-    visit_count= {p: 0 for p in corpus} # Mets tous probabilty(valeur) 0
+    """
+    for p in sorted(corpus):
+        print(f"  {p}: {corpus[p]}")
 
-    page_random = random.choice(list(corpus.keys())) # Choisi une page random
+    visit_count = dict.fromkeys(corpus, 0)  # Mets tous probabilty(valeur) 0
 
-    for surf in range(n): # surf sur N echantillons
-        visit_count[page_random] += 1 # Page visiter une fois
-        distribution = transition_model(corpus, page_random, damping_factor) # Va chercher sa probabilty
-        page_random = random.choices(list(distribution.keys()), weights=list(distribution.values()),k=1)[0] # weights = probability / k=1 = 1 tirage / [0] sort le nom
+    page_random = random.choice(list(corpus.keys()))  # Choisi une page random
 
-    return {p:visit_count[p] / n for p in corpus} #Retourne dictionnaire avec valeur de probability_de_la_page/n
+    for _surf in range(n):  # surf sur N echantillons
+        visit_count[page_random] += 1  # Page visiter une fois
+        distribution = transition_model(
+            corpus, page_random, damping_factor
+        )  # Va chercher sa probabilty
+        page_random = random.choices(
+            list(distribution.keys()), weights=list(distribution.values()), k=1
+        )[0]  # weights = probability / k=1 = 1 tirage / [0] sort le nom
+
+    return {
+        p: visit_count[p] / n for p in corpus
+    }  # Retourne dictionnaire avec valeur de probability_de_la_page/n
+
 
 def iterate_pagerank(
     corpus: dict[str, set[str]], damping_factor: float
@@ -187,4 +197,28 @@ def iterate_pagerank(
         La somme de toutes les valeurs de PageRank est de 1.
 
     """
-    raise NotImplementedError
+    result = {p: 1 / len(corpus) for p in corpus} # assigner à chaque page un rang initial de 1 / N
+    convergence = False
+
+    while not convergence:
+        new_result = dict.fromkeys(corpus, 0) #dictionnaire temporaire
+
+        for page, value in result.items():
+            links = corpus[page]
+            if len(links) == 0: # aucun lien
+                links = corpus
+            for linked_page in links:
+                new_result[linked_page] += value / len(links)
+
+        for page, value in new_result.items():
+            new_result[page] = (1 - damping_factor) / len(corpus) + damping_factor * value
+            # rang basées sur les valeurs actuelles, selon la formule du PageRank
+
+        convergence = True
+        for page in corpus:
+            if abs(result[page] - new_result[page]) > 0.001:
+                convergence = False
+
+        result = new_result
+
+    return result
