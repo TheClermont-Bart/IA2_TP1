@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 DAMPING: float = 0.85
-SAMPLES: int = 1
+SAMPLES: int = 10000
 
 log = logging.getLogger(__name__)
 
@@ -68,7 +68,9 @@ def crawl(directory: Path) -> dict[str, set[str]]:
         with filename.open(encoding="utf-8") as f:
             contents = f.read()
             links = re.findall(r'<a\s+(?:[^>]*?)href="([^"]*)"', contents)
-            pages[filename] = set(links) - {filename}
+            pages[filename.name] = (
+                set(links) - {filename.name}
+            )  # J'ai rajouter .name a filename car sinon j'avais un dictionnaire avec cle mais sans valeur
 
     # Inclut uniquement les liens vers d'autres pages du corpus
     for filename in pages:
@@ -154,9 +156,6 @@ def sample_pagerank(
     n represente le nombre de fois que le surfeur d'argent va se promener
 
     """
-    for p in sorted(corpus):
-        print(f"  {p}: {corpus[p]}")
-
     visit_count = dict.fromkeys(corpus, 0)  # Mets tous probabilty(valeur) 0
 
     page_random = random.choice(list(corpus.keys()))  # Choisi une page random
@@ -197,28 +196,37 @@ def iterate_pagerank(
         La somme de toutes les valeurs de PageRank est de 1.
 
     """
-    result = {p: 1 / len(corpus) for p in corpus} # assigner à chaque page un rang initial de 1 / N
+    result = {
+        p: 1 / len(corpus) for p in corpus
+    }  # assigner à chaque page un rang initial de 1 / N
     convergence = False
 
     while not convergence:
-        new_result = dict.fromkeys(corpus, 0) #dictionnaire temporaire
+        new_result = dict.fromkeys(
+            corpus, 0
+        )  # dictionnaire temporaire pour comparaison
 
         for page, value in result.items():
             links = corpus[page]
-            if len(links) == 0: # aucun lien
+            if len(links) == 0:  # aucun lien
                 links = corpus
             for linked_page in links:
                 new_result[linked_page] += value / len(links)
 
         for page, value in new_result.items():
-            new_result[page] = (1 - damping_factor) / len(corpus) + damping_factor * value
-            # rang basées sur les valeurs actuelles, selon la formule du PageRank
+            new_result[page] = (1 - damping_factor) / len(
+                corpus
+            ) + damping_factor * value
+            # rang basées sur les valeurs actuelles, selon la formule de PageRank
 
         convergence = True
+
         for page in corpus:
-            if abs(result[page] - new_result[page]) > 0.001:
+            if (
+                abs(result[page] - new_result[page]) > 0.001
+            ):  # valeur ne change de plus de 0.001
                 convergence = False
 
-        result = new_result
+        result = new_result  # swap
 
     return result
